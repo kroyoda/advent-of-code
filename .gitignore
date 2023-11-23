@@ -1,2 +1,5 @@
 /target
 /input
+
+# IDE related
+/.vscode
