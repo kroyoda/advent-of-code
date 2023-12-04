@@ -6,6 +6,7 @@ version = 3
 name = "advent-of-code"
 version = "0.1.0"
 dependencies = [
+ "aho-corasick",
  "aoc-runner",
  "aoc-runner-derive",
  "crypto",
