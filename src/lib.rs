@@ -6,8 +6,8 @@ extern crate crypto;
 extern crate regex;
 extern crate md5;
 
-pub mod y2015;
+pub mod y2023;
 
 aoc_lib! {
-    year = 2015;
+    year = 2023;
 }
