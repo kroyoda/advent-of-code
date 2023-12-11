@@ -44,6 +44,45 @@ impl<T> Grid<T> {
         }
     }
 
+    pub fn next_with_pos(&self, position: Position) -> Option<(Position, &T)> {
+        if position.1 + 1 == self.dimensions.1 {
+            if position.0 + 1 == self.dimensions.0 {
+                None
+            } else {
+                Some(((position.0 + 1, 0), self.at((position.0 + 1, 0))))
+            }
+        } else {
+            Some(((position.0, position.1 + 1), self.at((position.0, position.1 + 1))))
+        }
+    }
+
+    pub fn prev(&self, position: Position) -> Option<&T> {
+        if position.1 == 0 {
+            if position.0 == 0 {
+                None
+            } else {
+                Some(self.at((position.0 - 1, self.dimensions.1 - 1)))
+            }
+        } else {
+            Some(self.at((position.0, position.1 - 1)))
+        }
+    }
+
+    pub fn prev_with_pos(&self, position: Position) -> Option<(Position, &T)> {
+        if position.1 == 0 {
+            if position.0 == 0 {
+                None
+            } else {
+                Some((
+                    (position.0 - 1, self.dimensions.1 - 1),
+                    self.at((position.0 - 1, self.dimensions.1 - 1)),
+                ))
+            }
+        } else {
+            Some(((position.0, position.1 - 1), self.at((position.0, position.1 - 1))))
+        }
+    }
+
     pub fn neighbors(&self, position: Position) -> Vec<&T> {
         let mut out = Vec::with_capacity(8);
         self.each_neighbor_pos(position, |neighbor_pos| {

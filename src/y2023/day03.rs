@@ -1,82 +1,118 @@
-use crate::grid::{ Grid, Position };
+use std::collections::HashSet;
 
-#[aoc_generator(day3)]
-pub fn input_generator(input: &str) -> Grid<char> {
-    let lines = input.lines();
-    let dimensions = (lines.clone().count(), lines.clone().next().unwrap().len());
-
-    Grid::new(
-        dimensions,
-        input
-            .lines()
-            .flat_map(|line| line.chars())
-            .collect::<Vec<_>>()
-    )
+#[derive(Debug)]
+pub struct PartNumber {
+    value: i64,
+    points: HashSet<(i64, i64)>,
 }
 
-fn is_digit(c: char) -> bool {
-    c.is_ascii_digit()
-}
-
-fn is_symbol(c: char) -> bool {
-    !is_digit(c) && c != '.'
-}
-
-#[aoc(day3, part1)]
-pub fn solve_part1(grid: &Grid<char>) -> usize {
-    let mut out: usize = 0;
-    let mut number_digits: Vec<(Position, &char)> = Vec::new();
-
-    for (i, ch) in grid.iter().enumerate() {
-        if is_digit(*ch) {
-            number_digits.push((grid.position(i), ch));
-            continue;
-        }
-
-        // Char is either a dot or a symbol
-        // In any way, we may have ended a number
-        if !number_digits.is_empty() {
-            // But we only care if the number is surrounded by a symbol
-            // Any digit that is surrounded by a symbol makes the number valid
-            let mut valid = false;
-            for (pos, _) in &number_digits {
-                if
-                    grid
-                        .neighbors(*pos)
-                        .iter()
-                        .any(|n| is_symbol(**n))
-                {
-                    valid = true;
-                    break;
-                }
-            }
-
-            if !valid {
-                number_digits.clear();
-                continue;
-            }
-
-            // We have a valid number!
-            let n_string = number_digits
-                .iter()
-                .map(|(_, ch)| ch.to_string())
-                .collect::<String>();
-
-            let number = n_string.parse::<usize>().unwrap();
-            number_digits.clear();
-
-            out += number;
+impl PartNumber {
+    fn new(row: i64, col: i64, ch: char) -> Self {
+        let points = HashSet::from([
+            (row - 1, col - 1),
+            (row, col - 1),
+            (row + 1, col - 1),
+            (row - 1, col),
+            (row + 1, col),
+            (row - 1, col + 1),
+            (row, col + 1),
+            (row + 1, col + 1),
+        ]);
+        Self {
+            value: ((ch as u8) - b'0') as i64,
+            points,
         }
     }
 
-    out
+    fn add_digit(&mut self, row: i64, col: i64, ch: char) {
+        self.value = self.value * 10 + (((ch as u8) - b'0') as i64);
+        self.points.extend([
+            (row - 1, col + 1),
+            (row, col + 1),
+            (row + 1, col + 1),
+        ])
+    }
+
+    fn extract(&self) -> i64 {
+        self.value
+    }
+
+    fn next_to_symbol(&self, syms: &HashSet<(i64, i64)>) -> bool {
+        self.points.intersection(&syms).next().is_some()
+    }
+}
+
+pub struct Schema {
+    nums: Vec<PartNumber>,
+    syms: HashSet<(i64, i64)>,
+    gears: HashSet<(i64, i64)>,
+}
+
+impl Schema {
+    pub fn new(input: &str) -> Self {
+        let mut schema = Self {
+            nums: Vec::new(),
+            syms: HashSet::new(),
+            gears: HashSet::new(),
+        };
+        let mut cur_number: Option<PartNumber> = None;
+
+        for (row, line) in input.lines().enumerate() {
+            for (col, ch) in line.chars().enumerate() {
+                if ch.is_ascii_digit() {
+                    if let Some(ref mut num) = cur_number {
+                        num.add_digit(row as i64, col as i64, ch);
+                    } else {
+                        cur_number = Some(PartNumber::new(row as i64, col as i64, ch));
+                    }
+                } else {
+                    if let Some(num) = cur_number.take() {
+                        schema.nums.push(num);
+                    }
+                    if ch != '.' {
+                        schema.syms.insert((row as i64, col as i64));
+                        if ch == '*' {
+                            schema.gears.insert((row as i64, col as i64));
+                        }
+                    }
+                }
+            }
+        }
+
+        schema
+    }
+}
+
+#[aoc(day3, part1)]
+pub fn solve_part1(input: &str) -> i64 {
+    let schema = Schema::new(input);
+    schema.nums
+        .iter()
+        .filter(|num| num.next_to_symbol(&schema.syms))
+        .map(PartNumber::extract)
+        .sum::<i64>()
 }
 
 #[aoc(day3, part2)]
-pub fn solve_part2(grid: &Grid<char>) -> usize {
-    let mut out: usize = 0;
+pub fn solve_part2(input: &str) -> i64 {
+    let mut total = 0;
+    let schema = Schema::new(input);
 
-    out
+    'next_gear: for gear in schema.gears {
+        let mut matches = Vec::new();
+        for num in &schema.nums {
+            if num.points.contains(&gear) {
+                if matches.len() == 2 {
+                    continue 'next_gear;
+                }
+                matches.push(num.value);
+            }
+        }
+        if matches.len() == 2 {
+            total += matches[0] * matches[1];
+        }
+    }
+    total
 }
 
 #[cfg(test)]
@@ -96,29 +132,12 @@ mod tests {
 .664.598.."#;
 
     #[test]
-    fn test_generator() {
-        let grid = input_generator(SAMPLE);
-
-        grid.assert_size((10, 10));
-        grid.assert_valid();
-
-        // println!("{}", grid);
-
-        grid.assert_at((0, 1), '6');
-        grid.assert_at((1, 3), '*');
-    }
-
-    #[test]
     fn test_part1() {
-        let grid = input_generator(SAMPLE);
-
-        assert_eq!(solve_part1(&grid), 4361);
+        assert_eq!(solve_part1(SAMPLE), 4361);
     }
 
     #[test]
     fn test_part2() {
-        let grid = input_generator(SAMPLE);
-
-        assert_eq!(solve_part2(&grid), 467835);
+        assert_eq!(solve_part2(SAMPLE), 467835);
     }
 }
