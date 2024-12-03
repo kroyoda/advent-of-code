@@ -88,7 +88,6 @@ pub fn part_two(input: &str) -> Option<u32> {
     let lines = input.lines().collect::<Vec<&str>>();
 
     let mut enabled = true;
-    let mut cursor = 0;
 
     for line in &lines {
         for i in 0..line.len() {
