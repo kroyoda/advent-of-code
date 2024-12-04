@@ -32,14 +32,16 @@ pub fn part_one(input: &str) -> Option<u32> {
         .map(|(x, y)| (*x as i32, *y as i32))
         .collect::<Vec<(i32, i32)>>();
 
+    let pattern = "XMAS";
+
     for (x, y) in positions {
         for (dx, dy) in &DIRECTIONS {
             let max_position = (x + dx * 3, y + dy * 3);
             if !grid.is_valid(max_position.0, max_position.1) {
                 continue;
             }
-            let path = grid.path((x, y), 4, (*dx, *dy));
-            if "XMAS" == path.iter().collect::<String>() {
+            let path = grid.path((x, y), pattern.len() as i32, (*dx, *dy));
+            if path.iter().collect::<String>() == pattern {
                 count += 1;
             }
         }
@@ -47,12 +49,6 @@ pub fn part_one(input: &str) -> Option<u32> {
     Some(count)
 }
 
-/** get the following patterns in the grid:
- *
- *      M . S    M . S    S . S    M . M
- *      . A . or . A . or . A . or . A .
- *      M . S    S . M    M . M    S . S
- */
 pub fn part_two(input: &str) -> Option<u32> {
     let grid = Grid::new(input);
     let positions: Vec<(i32, i32)> = grid
@@ -62,17 +58,17 @@ pub fn part_two(input: &str) -> Option<u32> {
         .collect();
     let mut count = 0;
 
+    let patterns = ["MAS", "SAM"];
+
     for origin in positions {
-        // A is in the middle of the pattern
-        // get the four characters in diagonal of A
         let paths = [
-            grid.path(add_tuples(origin, BOTTOM_LEFT), 3, TOP_RIGHT),
-            grid.path(add_tuples(origin, BOTTOM_RIGHT), 3, TOP_LEFT),
+            grid.path(add_tuples(origin, BOTTOM_LEFT), patterns[0].len() as i32, TOP_RIGHT),
+            grid.path(add_tuples(origin, BOTTOM_RIGHT), patterns[1].len() as i32, TOP_LEFT),
         ];
         if
             paths.iter().all(|path| {
                 let path = path.iter().collect::<String>();
-                path == "MAS" || path == "SAM"
+                path == patterns[0] || path == patterns[1]
             })
         {
             count += 1;
