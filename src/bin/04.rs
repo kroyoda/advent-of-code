@@ -1,4 +1,4 @@
-use advent_of_code::{ add_tuples, Grid };
+use advent_of_code::{ add_tuples, grid::Grid };
 
 advent_of_code::solution!(4);
 
