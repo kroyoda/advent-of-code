@@ -4,10 +4,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/kroyoda/aoc/data"
+	"github.com/kroyoda/aoc/day1"
 )
 
 func run(args []string, _ io.Reader, stdout io.Writer) error {
 	switch args[0] {
+	case "day1":
+		instructions := day1.ParseInput(data.Input1)
+		safe := day1.NewSafe()
+		fmt.Fprintln(stdout, safe.Execute(instructions))
+		return nil
 	default:
 		return nil
 	}
