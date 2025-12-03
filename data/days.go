@@ -4,3 +4,6 @@ import _ "embed"
 
 //go:embed input1.txt
 var Input1 string
+
+//go:embed input2.txt
+var Input2 string
