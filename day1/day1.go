@@ -1,83 +1,107 @@
 package day1
 
 import (
-	"strconv"
-	"strings"
+	"fmt"
+
+	"github.com/kroyoda/aoc/utils"
+)
+
+type Direction string
+
+const (
+	Left  Direction = "L"
+	Right Direction = "R"
 )
 
 type Instruction struct {
-	Turn  string
+	Turn  Direction
 	Steps int
 }
 
-type Safe struct {
-	dial               int
-	pointedToZeroCount int
+type Dial struct {
+	points int
 }
 
-func NewSafe() *Safe {
-	return &Safe{dial: 50, pointedToZeroCount: 0}
+func NewDial() *Dial {
+	return &Dial{points: 50}
 }
 
-func atoi(s string) int {
-	result, err := strconv.Atoi(s)
-	if err != nil {
-		panic(err)
+func (d *Dial) Execute(inst Instruction) {
+	switch inst.Turn {
+	case Left:
+		d.points = (d.points - inst.Steps + 100) % 100
+	case Right:
+		d.points = (d.points + inst.Steps) % 100
+	default:
 	}
-	return result
+}
+
+func (d *Dial) Points() int {
+	return d.points
 }
 
 func ParseInput(input string) []Instruction {
-	var instructions []Instruction
-	for line := range strings.SplitSeq(input, "\n") {
+	lines := utils.SplitLines(input)
+	instructions := make([]Instruction, 0, len(lines))
+	for _, line := range lines {
+		var turn Direction
 		switch line[0] {
 		case 'L':
-			instructions = append(instructions, Instruction{"L", atoi(line[1:])})
+			turn = Left
 		case 'R':
-			instructions = append(instructions, Instruction{"R", atoi(line[1:])})
+			turn = Right
 		default:
 			continue
 		}
+		var steps int
+		_, err := fmt.Sscanf(line[1:], "%d", &steps)
+		if err != nil {
+			panic(fmt.Sprintf("invalid steps: %s", line[1:]))
+		}
+		instructions = append(instructions, Instruction{
+			Turn:  turn,
+			Steps: steps,
+		})
 	}
 	return instructions
 }
 
-func (s *Safe) Turn(direction string, steps int) {
-	switch direction {
-	case "L":
-		s.dial = (s.dial - steps + 100) % 100
-	case "R":
-		s.dial = (s.dial + steps) % 100
+func Part1(input string) int {
+	instructions := ParseInput(input)
+	dial := NewDial()
+
+	result := 0
+	for _, inst := range instructions {
+		dial.Execute(inst)
+		if dial.Points() == 0 {
+			result++
+		}
 	}
+	return result
 }
 
-func (s *Safe) Dial() int {
-	return s.dial
-}
+func Part2(input string) int {
+	instructions := ParseInput(input)
+	dial := NewDial()
 
-func (s *Safe) Reset() {
-	s.dial = 50
-}
-
-func (s *Safe) Execute(instructions []Instruction) int {
-	s.Reset()
-	zeroCount := 0
-	for _, instr := range instructions {
-		s.Turn(instr.Turn, instr.Steps)
-		switch instr.Turn {
-		case "L":
-			for i := 1; i <= instr.Steps; i++ {
-				if (s.dial+instr.Steps-i+100)%100 == 0 {
-					zeroCount++
+	result := 0
+	for _, inst := range instructions {
+		switch inst.Turn {
+		case Left:
+			for i := 0; i < inst.Steps; i++ {
+				dial.Execute(Instruction{Turn: Left, Steps: 1})
+				if dial.Points() == 0 {
+					result++
 				}
 			}
-		case "R":
-			for i := 1; i <= instr.Steps; i++ {
-				if (s.dial-instr.Steps+i+100)%100 == 0 {
-					zeroCount++
+		case Right:
+			for i := 0; i < inst.Steps; i++ {
+				dial.Execute(Instruction{Turn: Right, Steps: 1})
+				if dial.Points() == 0 {
+					result++
 				}
 			}
 		}
 	}
-	return zeroCount
+	return result
 }
