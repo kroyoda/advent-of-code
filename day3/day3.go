@@ -2,7 +2,8 @@ package day3
 
 import (
 	"strconv"
-	"strings"
+
+	"github.com/kroyoda/aoc/utils"
 )
 
 type Battery struct {
@@ -57,25 +58,10 @@ func NewBankFromString(s string) Bank {
 	return bank
 }
 
-func splitLines(s string) []string {
-	s = strings.ReplaceAll(s, "\r\n", "\n")
-	s = strings.ReplaceAll(s, "\r", "\n")
-	lines := strings.Split(s, "\n")
-
-	var result []string
-	for _, line := range lines {
-		if line == "" {
-			continue
-		}
-		result = append(result, strings.TrimSpace(line))
-	}
-	return result
-}
-
 func ParseInput(input string) []Bank {
 	var banks []Bank
 
-	for _, line := range splitLines(input) {
+	for _, line := range utils.SplitLines(input) {
 		if line == "" {
 			continue
 		}
