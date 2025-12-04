@@ -6,8 +6,7 @@ import (
 	"github.com/kroyoda/aoc/day4"
 )
 
-const (
-	input = `..@@.@@@@.
+const input = `..@@.@@@@.
 @@@.@.@.@@
 @@@@@.@.@@
 @.@@@@..@.
@@ -17,19 +16,6 @@ const (
 @.@@@.@@@@
 .@@@@@@@@.
 @.@.@@@.@.`
-
-	wanted = `..xx.xx@x.
-x@@.@.@.@@
-@@@@@.x.@@
-@.@@@@..@.
-x@.@@@@.@x
-.@@@@@@@.@
-.@.@.@.@@@
-x.@@@.@@@@
-.@@@@@@@@.
-x.x.@@@.x.
-`
-)
 
 func Test_Day4(t *testing.T) {
 	t.Run("T1 - Parses input", func(t *testing.T) {
