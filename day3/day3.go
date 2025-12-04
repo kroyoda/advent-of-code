@@ -1,8 +1,6 @@
 package day3
 
 import (
-	"fmt"
-	"math"
 	"strconv"
 	"strings"
 )
@@ -98,50 +96,33 @@ func findMax(list []int64) (index int, value int64) {
 
 func (b *Bank) FindMaxJoltage(nBatteries int) int64 {
 	var maxJoltage int64
-	var latestIndex int
-	fmt.Printf("\nFinding max joltage for %d batteries\n", nBatteries)
-
-	subset := b.Values()[latestIndex : b.Size()-nBatteries+1]
+	var lastIndex int
 
 	for i := nBatteries; i > 0; i-- {
-		fmt.Printf("\tFinding battery %d in subset: %v\n", nBatteries-i, subset)
+		subset := b.Values()[lastIndex : b.Size()-(i-1)]
+		index, value := findMax(subset)
 
-		idx, value := findMax(subset)
-		fmt.Printf("\t\tFound battery with joltage %d at index %d\n", value, idx)
-
-		latestIndex += idx + 1
-		fmt.Printf("\t\tLatest index is now %d\n", latestIndex)
-		subset = b.Values()[latestIndex:max(b.Size(), b.Size()-i)]
-		maxJoltage += int64(math.Pow10(i-1)) * value
+		maxJoltage = maxJoltage*10 + value
+		lastIndex += index + 1
 	}
+
 	return maxJoltage
 }
 
 func Part1(input string) int64 {
-	banks := ParseInput(input)
+	var sum int64
 
-	var total int64
-	for _, bank := range banks {
-		var maxJoltage int64
-
-		batteries := bank.Batteries()
-		for _, firstBattery := range batteries {
-			for _, secondBattery := range batteries[firstBattery.Index:] {
-				if firstBattery.Index == secondBattery.Index {
-					continue
-				}
-				joltage := firstBattery.Joltage*10 + secondBattery.Joltage
-				if joltage > maxJoltage {
-					maxJoltage = joltage
-				}
-			}
-		}
-
-		total += maxJoltage
+	for _, bank := range ParseInput(input) {
+		sum += bank.FindMaxJoltage(2)
 	}
-	return total
+	return sum
 }
 
 func Part2(input string) int64 {
-	return 0
+	var sum int64
+
+	for _, bank := range ParseInput(input) {
+		sum += bank.FindMaxJoltage(12)
+	}
+	return sum
 }

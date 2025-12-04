@@ -28,6 +28,7 @@ func run(args []string, _ io.Reader, stdout io.Writer) error {
 		return nil
 	case "day3":
 		fmt.Fprintf(stdout, "Part1: %d\n", day3.Part1(data.Input3))
+		fmt.Fprintf(stdout, "Part2: %d\n", day3.Part2(data.Input3))
 		return nil
 	default:
 		return nil
