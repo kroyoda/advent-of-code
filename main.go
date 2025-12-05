@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -13,9 +14,14 @@ import (
 	"github.com/kroyoda/aoc/day5"
 )
 
+var (
+	ErrInvalidArgs = errors.New("invalid arguments")
+)
+
 func run(args []string, _ io.Reader, stdout io.Writer) error {
 	if len(args) < 1 {
-		return fmt.Errorf("please provide a day to run")
+		fmt.Fprintf(stdout, "Please provide a day")
+		return ErrInvalidArgs
 	}
 
 	switch args[0] {
