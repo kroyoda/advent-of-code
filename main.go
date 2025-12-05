@@ -10,6 +10,7 @@ import (
 	"github.com/kroyoda/aoc/day2"
 	"github.com/kroyoda/aoc/day3"
 	"github.com/kroyoda/aoc/day4"
+	"github.com/kroyoda/aoc/day5"
 )
 
 func run(args []string, _ io.Reader, stdout io.Writer) error {
@@ -30,6 +31,11 @@ func run(args []string, _ io.Reader, stdout io.Writer) error {
 	case "day4":
 		fmt.Fprintf(stdout, "Part1: %d\n", day4.Part1(data.Input4))
 		fmt.Fprintf(stdout, "Part2: %d\n", day4.Part2(data.Input4))
+	case "day5":
+		fmt.Fprintf(stdout, "Part1: %d\n", day5.Part1(data.Input5))
+		fmt.Fprintf(stdout, "Part2: %d\n", day5.Part2(data.Input5))
+	default:
+		return fmt.Errorf("unknown day: %s", args[0])
 	}
 	return nil
 }

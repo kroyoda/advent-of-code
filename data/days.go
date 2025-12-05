@@ -13,3 +13,6 @@ var Input3 string
 
 //go:embed input4.txt
 var Input4 string
+
+//go:embed input5.txt
+var Input5 string
