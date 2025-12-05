@@ -16,6 +16,7 @@ import (
 
 var (
 	ErrInvalidArgs = errors.New("invalid arguments")
+	ErrUnknownDay  = errors.New("unknown day")
 )
 
 func run(args []string, _ io.Reader, stdout io.Writer) error {
@@ -41,7 +42,7 @@ func run(args []string, _ io.Reader, stdout io.Writer) error {
 		fmt.Fprintf(stdout, "Part1: %d\n", day5.Part1(data.Input5))
 		fmt.Fprintf(stdout, "Part2: %d\n", day5.Part2(data.Input5))
 	default:
-		return fmt.Errorf("unknown day: %s", args[0])
+		return errors.Join(ErrUnknownDay, fmt.Errorf("day: %s", args[0]))
 	}
 	return nil
 }
