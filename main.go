@@ -12,6 +12,7 @@ import (
 	"github.com/kroyoda/aoc/day3"
 	"github.com/kroyoda/aoc/day4"
 	"github.com/kroyoda/aoc/day5"
+	"github.com/kroyoda/aoc/day6"
 )
 
 var (
@@ -41,6 +42,9 @@ func run(args []string, _ io.Reader, stdout io.Writer) error {
 	case "day5":
 		fmt.Fprintf(stdout, "Part1: %d\n", day5.Part1(data.Input5))
 		fmt.Fprintf(stdout, "Part2: %d\n", day5.Part2(data.Input5))
+	case "day6":
+		fmt.Fprintf(stdout, "Part1: %d\n", day6.Part1(data.Input6))
+		fmt.Fprintf(stdout, "Part2: %d\n", day6.Part2(data.Input6))
 	default:
 		return errors.Join(ErrUnknownDay, fmt.Errorf("day: %s", args[0]))
 	}

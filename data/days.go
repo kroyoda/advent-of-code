@@ -16,3 +16,6 @@ var Input4 string
 
 //go:embed input5.txt
 var Input5 string
+
+//go:embed input6.txt
+var Input6 string
